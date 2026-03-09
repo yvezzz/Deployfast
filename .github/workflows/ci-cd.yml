@@ -3,10 +3,9 @@ name: CI/CD Pipeline
 on:
   push:
     branches: [ main, develop, 'feature/**' ]
+    tags: [ 'v*' ]
   pull_request:
     branches: [ main, develop ]
-  push:
-    tags: [ 'v*' ]
 
 jobs:
   build-and-test:
