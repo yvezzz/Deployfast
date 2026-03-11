@@ -20,6 +20,11 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 public class TaskServiceImpl implements TaskService {
 
+    private static final String ADMIN = "ADMIN";
+    private static final String RH = "RH";
+    private static final String TASK_NOT_FOUND = "Tâche non trouvée";
+    private static final String ACCESS_DENIED = "Accès refusé";
+
     private final TaskRepository taskRepository;
 
     @Override
@@ -40,7 +45,7 @@ public class TaskServiceImpl implements TaskService {
     public Page<TaskResponse> getAllTasks(User user, Boolean status, Pageable pageable) {
         Page<Task> tasks;
         // Si l'utilisateur est ADMIN ou RH, il voit toutes les tâches
-        if ("ADMIN".equals(user.getRole()) || "RH".equals(user.getRole())) {
+        if (ADMIN.equals(user.getRole()) || RH.equals(user.getRole())) {
             if (status != null) {
                 tasks = taskRepository.findByStatus(status, pageable);
             } else {
@@ -61,11 +66,11 @@ public class TaskServiceImpl implements TaskService {
     @Transactional(readOnly = true)
     public TaskResponse getTaskById(Long id, User user) {
         Task task = taskRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Tâche non trouvée"));
+                .orElseThrow(() -> new ResourceNotFoundException(TASK_NOT_FOUND));
 
         // Vérification de propriété (sauf pour ADMIN/RH)
-        if (!"ADMIN".equals(user.getRole()) && !"RH".equals(user.getRole()) && !task.getUser().getId().equals(user.getId())) {
-            throw new ResourceNotFoundException("Accès refusé");
+        if (!ADMIN.equals(user.getRole()) && !RH.equals(user.getRole()) && !task.getUser().getId().equals(user.getId())) {
+            throw new ResourceNotFoundException(ACCESS_DENIED);
         }
         return mapToResponse(task);
     }
@@ -74,11 +79,11 @@ public class TaskServiceImpl implements TaskService {
     @Transactional
     public TaskResponse updateTask(Long id, TaskRequest request, User user) {
         Task task = taskRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Tâche non trouvée"));
+                .orElseThrow(() -> new ResourceNotFoundException(TASK_NOT_FOUND));
 
         // Seul l'ADMIN ou le propriétaire peut modifier
-        if (!"ADMIN".equals(user.getRole()) && !task.getUser().getId().equals(user.getId())) {
-            throw new ResourceNotFoundException("Accès refusé");
+        if (!ADMIN.equals(user.getRole()) && !task.getUser().getId().equals(user.getId())) {
+            throw new ResourceNotFoundException(ACCESS_DENIED);
         }
 
         task.setTitle(request.getTitle());
@@ -93,11 +98,11 @@ public class TaskServiceImpl implements TaskService {
     @Transactional
     public void deleteTask(Long id, User user) {
         Task task = taskRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Tâche non trouvée"));
+                .orElseThrow(() -> new ResourceNotFoundException(TASK_NOT_FOUND));
 
         // Seul l'ADMIN ou le propriétaire peut supprimer
-        if (!"ADMIN".equals(user.getRole()) && !task.getUser().getId().equals(user.getId())) {
-            throw new ResourceNotFoundException("Accès refusé");
+        if (!ADMIN.equals(user.getRole()) && !task.getUser().getId().equals(user.getId())) {
+            throw new ResourceNotFoundException(ACCESS_DENIED);
         }
         taskRepository.delete(task);
     }
