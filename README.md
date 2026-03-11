@@ -4,7 +4,7 @@
 **Filière :** EADL4
 **Date :** Février-Mars 2026
 **Projet :** API REST Task Manager - DeployFast
-**Stack Technique :** Java 17, Spring Boot 3.2, JWT, GitHub Actions, Docker, SonarQube, PostgreSQL
+**Stack Technique :** Java 21, Spring Boot 3.4.5, JWT, GitHub Actions, Docker, SonarCloud, PostgreSQL
 
 ---
 
