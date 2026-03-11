@@ -2,10 +2,10 @@ name: CI/CD Pipeline
 
 on:
   push:
-    branches: [ main, develop, 'feature/**' ]
-    tags: [ 'v*' ]
+    branches: [main, develop, "feature/**"]
+    tags: ["v*"]
   pull_request:
-    branches: [ main, develop ]
+    branches: [main, develop]
 
 jobs:
   build-and-test:
@@ -17,9 +17,9 @@ jobs:
       - name: Set up JDK 17
         uses: actions/setup-java@v4
         with:
-          java-version: '17'
-          distribution: 'temurin'
-          cache: 'maven'
+          java-version: "17"
+          distribution: "temurin"
+          cache: "maven"
 
       - name: Build with Maven
         run: mvn clean compile
@@ -39,13 +39,13 @@ jobs:
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
-      
+
       - name: Set up JDK 17
         uses: actions/setup-java@v4
         with:
-          java-version: '17'
-          distribution: 'temurin'
-      
+          java-version: "17"
+          distribution: "temurin"
+
       - name: Cache Maven packages
         uses: actions/cache@v4
         with:
@@ -63,9 +63,9 @@ jobs:
       - name: Set up JDK 17
         uses: actions/setup-java@v4
         with:
-          java-version: '17'
-          distribution: 'temurin'
-          cache: 'maven'
+          java-version: "17"
+          distribution: "temurin"
+          cache: "maven"
 
       - name: Purge Dependency-Check Cache
         run: mvn org.owasp:dependency-check-maven:purge -DconnectionTimeout=30000 || true
