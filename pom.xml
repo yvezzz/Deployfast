@@ -183,15 +183,7 @@
 					</execution>
 				</executions>
 			</plugin>
-			<plugin>
-				<groupId>org.owasp</groupId>
-				<artifactId>dependency-check-maven</artifactId>
-				<version>9.0.7</version>
-				<configuration>
-					<nvdApiKey>${env.NVD_API_KEY}</nvdApiKey>
-					<nvdApiDelay>15000</nvdApiDelay>
-				</configuration>
-			</plugin>
+
 		</plugins>
 	</build>
 
