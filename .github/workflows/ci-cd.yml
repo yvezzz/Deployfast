@@ -58,8 +58,7 @@ jobs:
     needs: build-and-test
     steps:
       - name: OWASP Dependency Check
-        run: echo "Simulation du scan de sécurité"
-        # Dans un vrai projet, on utiliserait: mvn dependency-check:check
+        run: mvn dependency-check:check
 
   docker-build:
     runs-on: ubuntu-latest
