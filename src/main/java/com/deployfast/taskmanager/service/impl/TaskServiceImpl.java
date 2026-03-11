@@ -14,7 +14,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 /**
- * Implémentation du service de gestion des tâches
+ * Implémentation du service de gestion des tâches.
  */
 @Service
 @RequiredArgsConstructor
