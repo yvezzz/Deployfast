@@ -68,7 +68,9 @@ jobs:
           cache: 'maven'
 
       - name: OWASP Dependency Check
-        run: mvn dependency-check:check -DnvdApiKey=${{ secrets.NVD_API_KEY }}
+        env:
+          NVD_API_KEY: ${{ secrets.NVD_API_KEY }}
+        run: mvn dependency-check:check
 
   docker-build:
     runs-on: ubuntu-latest
