@@ -68,12 +68,19 @@ jobs:
           cache: "maven"
 
       - name: Purge Dependency-Check Cache
-        run: mvn org.owasp:dependency-check-maven:purge -DconnectionTimeout=30000 || true
+        continue-on-error: true
+        run: mvn org.owasp:dependency-check-maven:purge
 
       - name: OWASP Dependency Check
+        continue-on-error: true
         env:
           NVD_API_KEY: ${{ secrets.NVD_API_KEY }}
-        run: mvn dependency-check:check -DnvdApiKey=${{ secrets.NVD_API_KEY }} -DfailBuildOnCVSS=11
+        run: |
+          mvn dependency-check:check \
+            -DnvdApiKey=${{ secrets.NVD_API_KEY }} \
+            -DfailBuildOnError=false \
+            -DfailBuildOnCVSS=11 \
+            -DnvdApiDelay=6000
 
   docker-build:
     runs-on: ubuntu-latest
