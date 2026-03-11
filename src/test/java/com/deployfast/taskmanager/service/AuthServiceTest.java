@@ -55,11 +55,29 @@ class AuthServiceTest {
         when(jwtService.generateToken(any(UserDetails.class))).thenReturn("token");
 
         AuthResponse response = authService.register(request);
-
-        assertNotNull(response);
-        assertEquals("Utilisateur enregistré avec succès", response.getMessage());
-        verify(userRepository).save(any(User.class));
-    }
+ 
+         assertNotNull(response);
+         assertEquals("Utilisateur enregistré avec succès", response.getMessage());
+         verify(userRepository).save(argThat(user -> "COLLABORATEUR".equals(user.getRole())));
+     }
+ 
+     @Test
+     void shouldRegisterUserWithDefaultRoleWhenRoleIsNull() {
+         RegisterRequest request = RegisterRequest.builder()
+                 .email("test2@test.com")
+                 .password("password")
+                 .role(null)
+                 .build();
+ 
+         when(userRepository.existsByEmail(anyString())).thenReturn(false);
+         when(passwordEncoder.encode(anyString())).thenReturn("hashed_password");
+         when(jwtService.generateToken(any(UserDetails.class))).thenReturn("token");
+ 
+         AuthResponse response = authService.register(request);
+ 
+         assertNotNull(response);
+         verify(userRepository).save(argThat(user -> "COLLABORATEUR".equals(user.getRole())));
+     }
 
     @Test
     void shouldThrowExceptionWhenRegisteringWithExistingEmail() {

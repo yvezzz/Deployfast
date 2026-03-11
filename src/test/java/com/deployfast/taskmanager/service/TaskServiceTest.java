@@ -14,11 +14,14 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import org.springframework.data.domain.Page;
+
 import java.time.LocalDateTime;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
@@ -50,10 +53,40 @@ class TaskServiceTest {
         when(taskRepository.save(any(Task.class))).thenReturn(task);
 
         TaskResponse response = taskService.createTask(request, collabUser);
-
-        assertNotNull(response);
-        verify(taskRepository).save(any(Task.class));
-    }
+ 
+         assertNotNull(response);
+         verify(taskRepository).save(any(Task.class));
+     }
+ 
+     @Test
+     void shouldGetAllTasksAsAdminWithStatusFilter() {
+         when(taskRepository.findByStatus(true, null)).thenReturn(Page.empty());
+         
+         Page<TaskResponse> response = taskService.getAllTasks(adminUser, true, null);
+         
+         assertNotNull(response);
+         verify(taskRepository).findByStatus(eq(true), any());
+     }
+ 
+     @Test
+     void shouldGetAllTasksAsCollabWithStatusFilter() {
+         when(taskRepository.findByUserIdAndStatus(1L, true, null)).thenReturn(Page.empty());
+         
+         Page<TaskResponse> response = taskService.getAllTasks(collabUser, true, null);
+         
+         assertNotNull(response);
+         verify(taskRepository).findByUserIdAndStatus(eq(1L), eq(true), any());
+     }
+ 
+     @Test
+     void shouldGetAllTasksAsCollabWithoutFilter() {
+         when(taskRepository.findByUserId(1L, null)).thenReturn(Page.empty());
+         
+         Page<TaskResponse> response = taskService.getAllTasks(collabUser, null, null);
+         
+         assertNotNull(response);
+         verify(taskRepository).findByUserId(eq(1L), any());
+     }
 
     @Test
     void shouldGetTaskByIdAsOwner() {
@@ -87,5 +120,28 @@ class TaskServiceTest {
         when(taskRepository.findById(10L)).thenReturn(Optional.of(task));
 
         assertThrows(ResourceNotFoundException.class, () -> taskService.getTaskById(10L, otherUser));
+    }
+
+    @Test
+    void shouldUpdateTaskSuccessfully() {
+        TaskRequest request = new TaskRequest();
+        request.setTitle("Updated Title");
+        when(taskRepository.findById(10L)).thenReturn(Optional.of(task));
+        when(taskRepository.save(any(Task.class))).thenReturn(task);
+
+        TaskResponse response = taskService.updateTask(10L, request, collabUser);
+
+        assertNotNull(response);
+        verify(taskRepository).save(any(Task.class));
+    }
+
+    @Test
+    void shouldDeleteTaskSuccessfully() {
+        when(taskRepository.findById(10L)).thenReturn(Optional.of(task));
+        doNothing().when(taskRepository).delete(any(Task.class));
+
+        taskService.deleteTask(10L, collabUser);
+
+        verify(taskRepository).delete(any(Task.class));
     }
 }

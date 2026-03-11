@@ -48,4 +48,9 @@ class JwtServiceTest {
         
         assertFalse(jwtService.isTokenValid(token, user2));
     }
+
+    @Test
+    void shouldReturnExpirationTime() {
+        assertEquals(86400000L, jwtService.getExpirationTime());
+    }
 }
